@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QGraphicsView>
+#include <QAction>
 
 class Slide;
 class Widget : public QGraphicsView
@@ -24,9 +25,14 @@ protected:
 
     //
     virtual bool viewportEvent(QEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *event);
+private slots:
+    void actExitHandle(void);
 private:
     Slide* _currentSlide;
     bool _isTouchMode;
+    QAction *m_pActExit;
 Q_SIGNALS:
     void slideChangedBefore(void);
     void slideChangedAfter(void);

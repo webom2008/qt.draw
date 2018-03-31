@@ -3,6 +3,8 @@
 
 #include <QTouchEvent>
 #include <QEvent>
+#include <QDebug>
+#include <QMenu>
 
 Widget::Widget(QWidget *parent)
     : QGraphicsView(parent)
@@ -21,18 +23,27 @@ Widget::Widget(QWidget *parent)
     //init scene
     Slide* slide = new Slide;
     this->setScene(slide);
-    this->setSceneRect(0,0,600,600);
-    this->resize( 600,600);
+//    this->setSceneRect(0,0,600,600);
+//    this->resize( 600,600);
+    this->setWindowFlags(Qt::Window);
+    this->showFullScreen();
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     slide->setColor(Qt::green);
-    slide->setThickness( 8 );
+    slide->setThickness( 1 );
 
     this->_currentSlide = slide;
+
+    m_pActExit = new QAction(tr("EXIT"), this);
+    connect(m_pActExit, SIGNAL(triggered()),this, SLOT(actExitHandle()));
 }
 
 Widget::~Widget()
 {
-
+    delete _currentSlide;
+    delete m_pActExit;
+    qDebug("~Widget\r\n");
 }
 
 void Widget::resizeEvent(QResizeEvent *event){
@@ -90,4 +101,25 @@ bool Widget::viewportEvent(QEvent *event){
     }
 
     return QGraphicsView::viewportEvent(event);
+}
+
+void Widget::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Escape){
+        exit(0);
+    }
+    return QGraphicsView::keyPressEvent(event);
+}
+
+void Widget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu *menu = new QMenu(this);
+    menu->addAction(m_pActExit);
+    menu->move(cursor().pos());
+    menu->show();
+}
+
+void Widget::actExitHandle()
+{
+    exit(0);
 }
